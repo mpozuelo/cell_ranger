@@ -29,7 +29,6 @@ def helpMessage() {
       --single_index                In case the sequencing has been done single index although there were two indexes (i5 and i7). Only run with i7 and avoid the second index2 removal
 
     Demultiplexing parameters:
-      --max_errors                  Maximum error rate accepted. For 8bp adapters we need 0.15 to allow 1bp of error. (Default: 0.15)
       --save_untrimmed              Saves untrimmed reads when demultiplexing (Default: FALSE)
 
     QC:
@@ -87,7 +86,6 @@ if (workflow.revision) summary['Pipeline Release'] = workflow.revision
 summary['Run Name'] = custom_runName ?: workflow.runName
 summary['Input'] = params.input
 summary['Single index'] = params.single_index
-summary['Demultiplexing max error rate'] = max_errors
 summary['Max Resources'] = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
 if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
 summary['User'] = workflow.userName
