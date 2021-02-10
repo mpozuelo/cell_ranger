@@ -227,7 +227,7 @@ process cell_ranger {
   cellranger count --id=\${File_ID_new} \\
   --fastqs=./ \\
   --sample=\${File_ID_new} \\
-  --transcriptome=$transcriptome \\
+  --transcriptome="${transcriptome}" \\
   --chemistry=SC3Pv3 \\
   --expect-cells=8000 \\
   --localcores=$task.cpus \\
