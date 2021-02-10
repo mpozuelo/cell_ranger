@@ -201,7 +201,7 @@ process single_cell_fastq {
   publishDir "${cluster_path}/04_pfastq/${platform}/${run_id}/${lane}/${user}/cell_ranger/", mode: 'copy',
 
   input:
-  set val(sample), path(reads), val(index), val(run_id), val(lane), val(platform), val(user), path(transcriptome) from ch_single_cell_header
+  set val(sample), path(reads), val(index), val(run_id), val(lane), val(platform), val(user), path(transcriptome) from ch_cell_ranger
 
   output:
   path("*_S1_L00*.fq.gz")
