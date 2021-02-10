@@ -195,10 +195,10 @@ ${summary.collect { k,v -> "            <dt>$k</dt><dd><samp>${v ?: '<span style
 //Detect index in the end of read2
 
 
-process single_cell_fastq {
+process cell_ranger {
   tag "$sample"
   label 'process_high'
-  publishDir "${cluster_path}/04_pfastq/${platform}/${run_id}/${lane}/${user}/cell_ranger/", mode: 'copy',
+  publishDir "${cluster_path}/04_pfastq/${platform}/${run_id}/${lane}/${user}/cell_ranger/", mode: 'copy'
 
   input:
   set val(sample), path(reads), val(index), val(run_id), val(lane), val(platform), val(user), path(transcriptome) from ch_cell_ranger
