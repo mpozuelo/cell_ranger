@@ -165,13 +165,19 @@ ${summary.collect { k,v -> "            <dt>$k</dt><dd><samp>${v ?: '<span style
  def validate_input(LinkedHashMap sample) {
    def sample_id = sample.sampleID
    def index = sample.index
+   def index2 = sample.index2
+   def barcode = sample.barcode
    def run = sample.run
    def lane = sample.lane
-   def transcriptome = sample.transcriptome
+   def date = sample.date
+   def protocol = sample.protocol
    def platform = sample.platform
+   def source = sample.source
+   def genome = sample.genome
+   def user = sample.user
+   def transcriptome = sample.transcriptome
    def fastq1 = "${cluster_path}/04_pfastq/${platform}/${run}/${lane}/${sample}_${run}_${lane}_R1.fq.gz"
    def fastq2 = "${cluster_path}/04_pfastq/${platform}/${run}/${lane}/${sample}_${run}_${lane}_R2.fq.gz"
-   def user = sample.user
 
 
    def array = []
