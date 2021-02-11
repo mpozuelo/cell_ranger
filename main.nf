@@ -207,7 +207,7 @@ ${summary.collect { k,v -> "            <dt>$k</dt><dd><samp>${v ?: '<span style
 process cell_ranger {
   tag "$sample"
   label 'process_high'
-  publishDir "${cluster_path}/04_pfastq/${platform}/${run_id}/${lane}/${user}/cell_ranger/", mode: 'copy'
+  publishDir "${cluster_path}/04_pfastq/${platform}/${run_id}/${lane}/${user}/cell_ranger/", mode: 'copy',
   saveAs: { filename ->
     filename.endsWith(".fq.gz") ? "fastq/$filename" : filename
   }
