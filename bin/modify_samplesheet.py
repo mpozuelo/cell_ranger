@@ -27,7 +27,7 @@ def add_bed_file(FileIn,FileOut):
 
     basefolder = '/datos/ngs/dato-activo/References/cellRanger/'
     # Dictionary for bed files
-    bed = {'hg38': basefolder + 'refdata-cellranger-GRCh38-3.0.0', 'mm10': basefolder + 'refdata-gex-mm10-2020-A'}
+    bed = {'hg38': basefolder + 'refdata-cellranger-GRCh38-3.0.0/', 'mm10': basefolder + 'refdata-gex-mm10-2020-A/'}
 
     # Write header
     #fo.write("%s\n" %('\t'.join(l_th[1:])))
