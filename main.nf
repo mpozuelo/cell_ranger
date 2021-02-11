@@ -213,7 +213,7 @@ process cell_ranger {
   }
 
   input:
-  set val(sample), path(reads), val(index), val(run_id), val(lane), val(platform), val(user), path(transcriptome) from ch_cell_ranger
+  set val(sample), file(reads), val(index), val(run_id), val(lane), val(platform), val(user), file(transcriptome) from ch_cell_ranger
 
   output:
   path("*_S1_L00*.fq.gz")
