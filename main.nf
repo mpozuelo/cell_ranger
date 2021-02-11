@@ -221,8 +221,7 @@ process cell_ranger {
 
 
   script:
-  fq1 = "${sample}_${run_id}_${lane}_R1.fq"
-  fq2 = "${sample}_${run_id}_${lane}_R2.fq"
+
   fqheader1 = "${sample}_${run_id}_${lane}_R1_BC.fq"
   fqheader2 = "${sample}_${run_id}_${lane}_R2_BC.fq"
   gzheader1 = "${sample}_${run_id}_${lane}_R1_BC.fq.gz"
@@ -232,10 +231,8 @@ process cell_ranger {
   // For this step, BC sequence is collected from header (BC was incuded in the header in previous step)
 
   """
-  pigz -d -p $task.cpus ${reads[0]} &
-  pigz -d -p $task.cpus ${reads[1]}
-  cat $fq1 | awk -v var="$index" '{if (NR%4 == 1){print \$1"_"var} else{print \$1}}' > $fqheader1 &
-  cat $fq2 | awk -v var="$index" '{if (NR%4 == 1){print \$1"_"var} else{print \$1}}' > $fqheader2
+  zcat ${reads[0]} | awk -v var="$index" '{if (NR%4 == 1){print \$1"_"var} else{print \$1}}' > $fqheader1 &
+  zcat ${reads[1]} | awk -v var="$index" '{if (NR%4 == 1){print \$1"_"var} else{print \$1}}' > $fqheader2
   pigz -p $task.cpus $fqheader1 &
   pigz -p $task.cpus $fqheader2
   File_ID_new=\$(echo "${sample}" | rev | cut -c 3- | rev)
