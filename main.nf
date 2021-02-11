@@ -237,8 +237,8 @@ process cell_ranger {
   File_ID_new=\$(echo "${sample}" | rev | cut -c 3- | rev)
   File_ID_number=\$(echo "${sample}" | rev | cut -c 1 | rev)
   Lane_ID_number=\$(echo "${lane}" | rev | cut -c 1 | rev)
-  convertHeaders.py -i $fqheader1 -o \${File_ID_new}_S1_L00\${Lane_ID_number}_R1_00\${File_ID_number}.fq.gz &
-  convertHeaders.py -i $fqheader2 -o \${File_ID_new}_S1_L00\${Lane_ID_number}_R2_00\${File_ID_number}.fq.gz
+  convertHeaders.py -i $gzheader1 -o \${File_ID_new}_S1_L00\${Lane_ID_number}_R1_00\${File_ID_number}.fq.gz &
+  convertHeaders.py -i $gzheader2 -o \${File_ID_new}_S1_L00\${Lane_ID_number}_R2_00\${File_ID_number}.fq.gz
 
   cellranger count --id=\${File_ID_new} \\
   --fastqs=./ \\
