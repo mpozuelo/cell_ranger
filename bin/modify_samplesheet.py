@@ -34,8 +34,8 @@ def add_bed_file(FileIn,FileOut):
 
     # Compute percentages
     cov['transcriptome'] = cov['genome'].map(bed)
-    cov['fastq1'] = "/datos/ngs/dato-activo/data/04_pfastq/" + cov['platform'] + '/' + cov['run'] + '/' + cov['lane'] + '/demux_fastq/' + cov['sampleID'] + '_' + cov['run'] + '_' + cov['lane'] + '_R1.fq.gz'
-    cov['fastq2'] = "/datos/ngs/dato-activo/data/04_pfastq/" + cov['platform'] + '/' + cov['run'] + '/' + cov['lane'] + '/demux_fastq/' + cov['sampleID'] + '_' + cov['run'] + '_' + cov['lane'] + '_R2.fq.gz'
+    cov['fastq1'] = "/datos/ngs/dato-activo/data/04_pfastq/" + cov['platform'] + '/' + cov['run'] + '/' + cov['lane'] + '/' + cov['user'] + '/demux_fastq/' + cov['sampleID'] + '_' + cov['run'] + '_' + cov['lane'] + '_R1.fq.gz'
+    cov['fastq2'] = "/datos/ngs/dato-activo/data/04_pfastq/" + cov['platform'] + '/' + cov['run'] + '/' + cov['lane'] + '/' + cov['user'] + '/demux_fastq/' + cov['sampleID'] + '_' + cov['run'] + '_' + cov['lane'] + '_R2.fq.gz'
 
 
     cov.to_csv(fo, index = False)
