@@ -183,7 +183,7 @@ ${summary.collect { k,v -> "            <dt>$k</dt><dd><samp>${v ?: '<span style
 
 
    def array = []
-   array = [ sample_id, [file(fastq1, checkIfExists: true), file(fastq2, checkIfExists: true)], index, run, lane, platform, file(transcriptome, checkIfExists: true) ]
+   array = [ sample_id, [file(fastq1, checkIfExists: true), file(fastq2, checkIfExists: true)], index, run, lane, platform, user, file(transcriptome, checkIfExists: true) ]
 
    return array
  }
@@ -259,7 +259,7 @@ process fastqc {
    }
 
    input:
-   val(sample), file(reads), val(index), val(run_id), val(lane), val(platform), val(user), file(transcriptome) from ch_fastq
+   set val(sample), file(reads), val(index), val(run_id), val(lane), val(platform), val(user), file(transcriptome) from ch_fastq
 
    output:
    path("*_fastqc.{zip,html}") into fastqc_results //multiqc
