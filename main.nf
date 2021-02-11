@@ -228,8 +228,8 @@ process cell_ranger {
   // For this step, BC sequence is collected from header (BC was incuded in the header in previous step)
 
   """
-  zcat ${reads[0]} | awk -v var="$index" '{if (NR%4 == 1){print \$1"_"var} else{print \$1}}' $fqheader1 &
-  zcat ${reads[1]} | awk -v var="$index" '{if (NR%4 == 1){print \$1"_"var} else{print \$1}}' $fqheader2
+  zcat ${reads[0]} | awk -v var="$index" '{if (NR%4 == 1){print \$1"_"var} else{print \$1}}' > $fqheader1 &
+  zcat ${reads[1]} | awk -v var="$index" '{if (NR%4 == 1){print \$1"_"var} else{print \$1}}' > $fqheader2
   pigz -p $task.cpus $fqheader1
   pigz -p $task.cpus $fqheader2
   File_ID_new=\$(echo "${sample}" | rev | cut -c 3- | rev)
