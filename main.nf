@@ -259,7 +259,7 @@ process fastqc {
    }
 
    input:
-   val(sample), path(reads), val(index), val(run_id), val(lane), val(platform), val(user), path(transcriptome) from ch_fastq
+   val(sample), file(reads), val(index), val(run_id), val(lane), val(platform), val(user), file(transcriptome) from ch_fastq
 
    output:
    path("*_fastqc.{zip,html}") into fastqc_results //multiqc
