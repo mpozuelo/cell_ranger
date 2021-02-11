@@ -12,4 +12,3 @@ dependencies:
   - conda-forge::pigz=2.3.4
   - bioconda::fastqc=0.11.9
   - pandas=1.2.1
-  - cellranger=3.0.2
