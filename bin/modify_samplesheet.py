@@ -34,6 +34,9 @@ def add_bed_file(FileIn,FileOut):
 
     # Compute percentages
     cov['transcriptome'] = cov['genome'].map(bed)
+    cov['fastq1'] = "/datos/ngs/dato-activo/data/04_pfastq/" + cov['platform'] + '/' + cov['run'] + '/demux_fastq/' + cov['sample'] + '_' + cov['run'] + '_' + cov['lane'] + '_R1.fq.gz'
+    cov['fastq2'] = "/datos/ngs/dato-activo/data/04_pfastq/" + cov['platform'] + '/' + cov['run'] + '/demux_fastq/' + cov['sample'] + '_' + cov['run'] + '_' + cov['lane'] + '_R2.fq.gz'
+
 
     cov.to_csv(fo, index = False)
     fi.close()
