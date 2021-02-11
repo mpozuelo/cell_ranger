@@ -194,7 +194,8 @@ ${summary.collect { k,v -> "            <dt>$k</dt><dd><samp>${v ?: '<span style
  ch_samplesheet
  .splitCsv(header:true, sep:',')
  .map { validate_input(it) }
- .set { ch_cell_ranger }
+ .into { ch_cell_ranger,
+         ch_fastq }
 
 
 /*
@@ -207,6 +208,9 @@ process cell_ranger {
   tag "$sample"
   label 'process_high'
   publishDir "${cluster_path}/04_pfastq/${platform}/${run_id}/${lane}/${user}/cell_ranger/", mode: 'copy'
+  saveAs: { filename ->
+    filename.endsWith(".fq.gz") ? "fastq/$filename" : filename
+  }
 
   input:
   set val(sample), path(reads), val(index), val(run_id), val(lane), val(platform), val(user), path(transcriptome) from ch_cell_ranger
@@ -243,6 +247,28 @@ process cell_ranger {
 
   """
 }
+
+
+
+process fastqc {
+   tag "$sample"
+   label 'process_low'
+   publishDir "${cluster_path}/04_pfastq/${platform}/${run_id}/${lane}/${user}/fastqc/${sample}", mode: 'copy',
+   saveAs: { filename ->
+     filename.endsWith(".zip") ? "zips/$filename" : filename
+   }
+
+   input:
+   val(sample), path(reads), val(index), val(run_id), val(lane), val(platform), val(user), path(transcriptome) from ch_fastq
+
+   output:
+   path("*_fastqc.{zip,html}") into fastqc_results //multiqc
+
+   script:
+   """
+   fastqc --quiet --threads $task.cpus $reads
+   """
+ }
 
 
 
