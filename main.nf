@@ -176,12 +176,11 @@ ${summary.collect { k,v -> "            <dt>$k</dt><dd><samp>${v ?: '<span style
    def genome = sample.genome
    def user = sample.user
    def transcriptome = sample.transcriptome
-   def fastq1 = "${cluster_path}/04_pfastq/${platform}/${run}/${lane}/${sample}_${run}_${lane}_R1.fq.gz"
-   def fastq2 = "${cluster_path}/04_pfastq/${platform}/${run}/${lane}/${sample}_${run}_${lane}_R2.fq.gz"
+
 
 
    def array = []
-   array = [ sample_id, [file(fastq1, checkIfExists: true), file(fastq2, checkIfExists: true)], index, run, lane, platform ]
+   array = [ sample_id, index, run, lane, platform, transcriptome ]
 
    return array
  }
