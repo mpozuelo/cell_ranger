@@ -2,8 +2,6 @@ FROM nfcore/base:1.9
 LABEL authors="Marta Pozuelo del Rio" \
       description="Docker image containing all requirements for the mpozuelo/cell_ranger pipeline"
 
-FROM tomkellygenetics/cellranger_clean:3.0.2.9001
-
 # Install the conda environment
 COPY environment.yml /
 RUN conda env create -f /environment.yml && conda clean -a
