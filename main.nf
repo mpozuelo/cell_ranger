@@ -251,7 +251,7 @@ process cell_ranger {
 }
 
 
-/*
+
 process fastqc {
    tag "$sample"
    label 'process_low'
