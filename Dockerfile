@@ -13,14 +13,23 @@ ENV PATH /opt/conda/envs/mpozuelo-cell_ranger-1.0/bin:$PATH
 RUN conda env export --name mpozuelo-cell_ranger-1.0 > mpozuelo-cell_ranger-1.0.yml
 
 
-#install cell cellRanger
+
+#Install cell cellRanger
+
+ENV CELLRANGER_VERSION 5.0.1
+
+ENV PATH /opt/cellranger-${CELLRANGER_VERSION}:$PATH
+
+RUN apt group install -y "Development Tools" \
+    && apt install -y which
+
 RUN \
   set -x \
-  yum update -y && \
-  yum install -y \
+  apt update -y && \
+  apt install -y \
   wget \
   which && \
-  yum clean all
+  apt clean all
 
 ENV CELLRANGER_VER 1.3.1
 
