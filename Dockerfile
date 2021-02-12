@@ -14,6 +14,24 @@ RUN conda env export --name mpozuelo-cell_ranger-1.0 > mpozuelo-cell_ranger-1.0.
 
 
 #install cell cellRanger
-curl -o https://cf.10xgenomics.com/releases/cell-exp/cellranger-5.0.1.tar.gz?Expires=1613156369&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9jZi4xMHhnZW5vbWljcy5jb20vcmVsZWFzZXMvY2VsbC1leHAvY2VsbHJhbmdlci01LjAuMS50YXIuZ3oiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE2MTMxNTYzNjl9fX1dfQ__&Signature=jwfXo83T2LCQdBM1QeCDI6kdvfs9oCRI8SRT5~CcvktmfJ4Gf7qZdycH0S1e~MlYtCW4OA80FvQfXYTCwtvdLKWr1PQEOBdFk-7ivSNaVyQI1DUBIlvWTEV9fIuEDBLxjiNVaY4JmlUYuzj87xFWntg01rX1FNMlhJlsmulCxCtS8UfqfauTPKlInjblv2cLGon2TSlgF9wAaeb0oqc8KNNmfU9tRj7x7skqJqPrCMzdo1yWpQrTDwEm-TRa9lsFFBNRCYN7AKBfVI1fnD1weFPYnyu1Kt7xL3-Tuc6h2ATuuBleziZ2PVD8dlW~9uLjV1k0OcRIKwP~82VqzgEfbg__&Key-Pair-Id=APKAI7S6A5RYOXBWRPDA
-tar -xzvf cellranger-5.0.1.tar.gz
-export PATH=cellranger-5.0.1:$PATH
+RUN \
+  set -x \
+  yum update -y && \
+  yum install -y \
+  wget \
+  which && \
+  yum clean all
+
+ENV CELLRANGER_VER 1.3.1
+
+# Pre-downloaded file
+COPY cellranger-$CELLRANGER_VER.tar.gz /opt/cellranger-$CELLRANGER_VER.tar.gz
+
+RUN \
+  cd /opt && \
+  tar -xzvf cellranger-$CELLRANGER_VER.tar.gz && \
+  export PATH=/opt/cellranger-$CELLRANGER_VER:$PATH && \
+  ln -s /opt/cellranger-$CELLRANGER_VER/cellranger /usr/bin/cellranger && \
+  rm -rf /opt/cellranger-$CELLRANGER_VER.tar.gz
+
+CMD ["cellranger"]
