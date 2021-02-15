@@ -19,11 +19,12 @@ def helpMessage() {
 
     nextflow run mpozuelo/MGI_demux --input '*.txt' -profile docker
 
-    Mandatory arguments:
+    Mandatory arguments
       --input [file]                Samplesheet with indexes and samples information
       -profile                      Configuration profile to use. Can use multiple (comma separated)
                                     Available: conda, docker, singularity.
       --cluster_path                Cluster path to store data and to search for input data (Default: /datos/ngs/dato-activo)
+      --project                     Project name to store in folder
 
     Optional:
       --single_index                In case the sequencing has been done single index although there were two indexes (i5 and i7). Only run with i7 and avoid the second index2 removal
@@ -77,7 +78,7 @@ if (!params.outdir) {
 }
 
 cluster_path = params.cluster_path
-
+project = params.project
 
 // Header log info
 log.info mpozueloHeader()
@@ -194,7 +195,7 @@ ${summary.collect { k,v -> "            <dt>$k</dt><dd><samp>${v ?: '<span style
  ch_samplesheet
  .splitCsv(header:true, sep:',')
  .map { validate_input(it) }
- .into { ch_cell_ranger
+ .into { ch_prepare_file
          ch_fastq }
 
 
@@ -204,7 +205,7 @@ ${summary.collect { k,v -> "            <dt>$k</dt><dd><samp>${v ?: '<span style
 //Detect index in the end of read2
 
 
-process cell_ranger {
+process prepare_files {
   tag "$sample"
   label 'process_high'
   publishDir "${cluster_path}/04_pfastq/${platform}/${run_id}/${lane}/${user}/cell_ranger/", mode: 'copy',
@@ -213,15 +214,12 @@ process cell_ranger {
   }
 
   input:
-  set val(sample), file(reads), val(index), val(run_id), val(lane), val(platform), val(user), file(transcriptome) from ch_cell_ranger
+  set val(sample), file(reads), val(index), val(run_id), val(lane), val(platform), val(user), file(transcriptome) from ch_prepare_file
 
   output:
-  path("*_S1_L00*.fq.gz")
-  path("${sample}/")
-
+  set val(sample), file("*_S1_L00*.fq.gz"), file(transcriptome) into ch_cell_ranger
 
   script:
-
   fqheader1 = "${sample}_${run_id}_${lane}_R1_BC.fq"
   fqheader2 = "${sample}_${run_id}_${lane}_R2_BC.fq"
   gzheader1 = "${sample}_${run_id}_${lane}_R1_BC.fq.gz"
@@ -235,11 +233,31 @@ process cell_ranger {
   zcat ${reads[1]} | awk -v var="$index" '{if (NR%4 == 1){print \$1"_"var} else{print \$1}}' > $fqheader2
   pigz -p $task.cpus $fqheader1 &
   pigz -p $task.cpus $fqheader2
-  File_ID_new=\$(echo "${sample}" | rev | cut -c 3- | rev)
-  File_ID_number=\$(echo "${sample}" | rev | cut -c 1 | rev)
-  Lane_ID_number=\$(echo "${lane}" | rev | cut -c 1 | rev)
+  File_ID_new=\$(echo "\${File_ID}" | rev | cut -c 3- | rev)
+  File_ID_number=\$(echo "\${File_ID}" | rev | cut -c 1 | rev)
+  Lane_ID_number=\$(echo "\${Lane_ID}" | rev | cut -c 1 | rev)
   convertHeaders.py -i $gzheader1 -o \${File_ID_new}_S1_L00\${Lane_ID_number}_R1_00\${File_ID_number}.fq.gz &
   convertHeaders.py -i $gzheader2 -o \${File_ID_new}_S1_L00\${Lane_ID_number}_R2_00\${File_ID_number}.fq.gz
+  """
+}
+
+
+process cell_ranger {
+  tag "$sample"
+  label 'process_high'
+  container 'mpozuelo/cellranger:cellranger'
+  publishDir "${cluster_path}/05_QC/${project}/cell_ranger/", mode: 'copy',
+
+  input:
+  set val(sample), file(reads), file(transcriptome) from ch_cell_ranger
+
+  output:
+  path("${sample}/")
+
+  script:
+  """
+  File_ID_new=\$(echo "${sample}" | rev | cut -c 3- | rev)
+  File_ID_number=\$(echo "${sample}" | rev | cut -c 1 | rev)
 
   cellranger count --id=\${File_ID_new} \\
   --fastqs=./ \\
@@ -248,10 +266,12 @@ process cell_ranger {
   --chemistry=SC3Pv3 \\
   --expect-cells=8000 \\
   --localcores=$task.cpus \\
-  --localmem=64
-
+  --localmem=78
   """
+
 }
+
+
 
 
 /*
