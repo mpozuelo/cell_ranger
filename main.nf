@@ -233,9 +233,9 @@ process prepare_files {
   zcat ${reads[1]} | awk -v var="$index" '{if (NR%4 == 1){print \$1"_"var} else{print \$1}}' > $fqheader2
   pigz -p $task.cpus $fqheader1 &
   pigz -p $task.cpus $fqheader2
-  File_ID_new=\$(echo "\${File_ID}" | rev | cut -c 3- | rev)
-  File_ID_number=\$(echo "\${File_ID}" | rev | cut -c 1 | rev)
-  Lane_ID_number=\$(echo "\${Lane_ID}" | rev | cut -c 1 | rev)
+  File_ID_new=\$(echo "${sample}" | rev | cut -c 3- | rev)
+  File_ID_number=\$(echo "${sample}" | rev | cut -c 1 | rev)
+  Lane_ID_number=\$(echo "${lane}" | rev | cut -c 1 | rev)
   convertHeaders.py -i $gzheader1 -o \${File_ID_new}_S1_L00\${Lane_ID_number}_R1_00\${File_ID_number}.fq.gz &
   convertHeaders.py -i $gzheader2 -o \${File_ID_new}_S1_L00\${Lane_ID_number}_R2_00\${File_ID_number}.fq.gz
   """
