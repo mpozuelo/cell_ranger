@@ -246,7 +246,7 @@ process cell_ranger {
   tag "$sample"
   label 'process_high'
   container 'mpozuelo/cellranger:cellranger'
-  publishDir "${cluster_path}/05_QC/${project}/cell_ranger/", mode: 'copy',
+  publishDir "${cluster_path}/05_QC/${project}/cell_ranger/", mode: 'copy'
 
   input:
   set val(sample), file(reads), file(transcriptome) from ch_cell_ranger
