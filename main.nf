@@ -248,10 +248,10 @@ process prepare_files {
   """
 }
 
-
+/*
 
 process cell_ranger {
-  tag "cell_ranger"
+  tag "$params.genome"
   label 'process_high'
   container 'mpozuelo/cellranger:cellranger'
   publishDir "${cluster_path}/05_QC/${project}/cell_ranger/", mode: 'copy'
