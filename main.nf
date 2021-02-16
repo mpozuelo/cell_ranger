@@ -248,7 +248,7 @@ process prepare_files {
   """
 }
 
-/*
+
 
 process cell_ranger {
   tag "$params.genome"
@@ -290,7 +290,7 @@ process cell_ranger {
 
 }
 
-
+/*
 
 process fastqc {
    tag "$sample"
