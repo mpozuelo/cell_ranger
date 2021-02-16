@@ -202,7 +202,7 @@ ${summary.collect { k,v -> "            <dt>$k</dt><dd><samp>${v ?: '<span style
  ch_samplesheet
  .splitCsv(header:true, sep:',')
  .map { validate_input(it) }
- .into { ch_prepare_file
+ .set { ch_prepare_file
          ch_fastq }
 
 
@@ -251,7 +251,7 @@ process prepare_files {
 
 
 process cell_ranger {
-  tag "$sample"
+  tag "cell_ranger"
   label 'process_high'
   container 'mpozuelo/cellranger:cellranger'
   publishDir "${cluster_path}/05_QC/${project}/cell_ranger/", mode: 'copy'
@@ -261,7 +261,7 @@ process cell_ranger {
   file(genome) from ch_genome
 
   output:
-  path("${sample}/")
+  path("*")
 
   script:
   """
