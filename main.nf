@@ -80,6 +80,13 @@ if (!params.outdir) {
 cluster_path = params.cluster_path
 project = params.project
 
+if (params.genome == "mm10") {
+  ch_genome = file("/datos/ngs/dato-activo/References/cellRanger/refdata-gex-mm10-2020-A/", checkIfExists: true)
+} else if (params.genome == "hg38") {
+  ch_genome = file("/datos/ngs/dato-activo/References/cellRanger/refdata-cellranger-GRCh38-3.0.0/", checkIfExists: true)
+}
+
+
 // Header log info
 log.info mpozueloHeader()
 def summary = [:]
@@ -199,12 +206,6 @@ ${summary.collect { k,v -> "            <dt>$k</dt><dd><samp>${v ?: '<span style
          ch_fastq }
 
 
-if (params.genome == "mm10") {
-  ch_genome = file("/datos/ngs/dato-activo/References/cellRanger/refdata-gex-mm10-2020-A/", checkIfExists: true)
-} else if (params.genome == "hg38") {
-  ch_genome = file("/datos/ngs/dato-activo/References/cellRanger/refdata-cellranger-GRCh38-3.0.0/", checkIfExists: true)
-}
-
 /*
  * STEP 1 - Change header and cell ranger
  */
@@ -220,7 +221,7 @@ process prepare_files {
   }
 
   input:
-  set val(sample), file(reads), val(index), val(run_id), val(lane), val(platform), val(user), file(transcriptome) from ch_prepare_file
+  set val(sample), file(reads), val(index), val(run_id), val(lane), val(platform), val(user) from ch_prepare_file
 
   output:
   file("*_S1_L00*.fq.gz") into ch_cell_ranger
@@ -291,8 +292,6 @@ process cell_ranger {
 
 
 
-
-/*
 process fastqc {
    tag "$sample"
    label 'process_low'
@@ -302,7 +301,7 @@ process fastqc {
    }
 
    input:
-   set val(sample), file(reads), val(index), val(run_id), val(lane), val(platform), val(user), file(transcriptome) from ch_fastq
+   set val(sample), file(reads), val(index), val(run_id), val(lane), val(platform), val(user) from ch_fastq
 
    output:
    path("*_fastqc.{zip,html}") into fastqc_results //multiqc
