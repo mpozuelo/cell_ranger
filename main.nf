@@ -251,9 +251,9 @@ process prepare_files {
 
 
 process cell_ranger {
+  container 'mpozuelo/cellranger:cellranger'
   tag "$params.genome"
   label 'process_high'
-  container 'mpozuelo/cellranger:cellranger'
   publishDir "${cluster_path}/05_QC/${project}/cell_ranger/", mode: 'copy'
 
   input:
@@ -264,6 +264,7 @@ process cell_ranger {
   path("*")
 
   script:
+
   """
   for f in \$(find fastq -name "*.fq.gz") \\
   do \\
