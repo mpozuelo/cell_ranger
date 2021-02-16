@@ -184,7 +184,7 @@ ${summary.collect { k,v -> "            <dt>$k</dt><dd><samp>${v ?: '<span style
 
 
    def array = []
-   array = [ sample_id, [file(fastq1, checkIfExists: true), file(fastq2, checkIfExists: true)], index, run, lane, platform, user, file(transcriptome, checkIfExists: true) ]
+   array = [ sample_id, [file(fastq1, checkIfExists: true), file(fastq2, checkIfExists: true)], index, run, lane, platform, user ]
 
    return array
  }
@@ -198,6 +198,12 @@ ${summary.collect { k,v -> "            <dt>$k</dt><dd><samp>${v ?: '<span style
  .into { ch_prepare_file
          ch_fastq }
 
+
+if (params.genome == "mm10") {
+  ch_genome = file("/datos/ngs/dato-activo/References/cellRanger/refdata-gex-mm10-2020-A/", checkIfExists: true)
+} else if (params.genome == "hg38") {
+  ch_genome = file("/datos/ngs/dato-activo/References/cellRanger/refdata-cellranger-GRCh38-3.0.0/", checkIfExists: true)
+}
 
 /*
  * STEP 1 - Change header and cell ranger
@@ -217,7 +223,7 @@ process prepare_files {
   set val(sample), file(reads), val(index), val(run_id), val(lane), val(platform), val(user), file(transcriptome) from ch_prepare_file
 
   output:
-  set val(sample), file("*_S1_L00*.fq.gz"), file(transcriptome) into ch_cell_ranger
+  file("*_S1_L00*.fq.gz") into ch_cell_ranger
 
   script:
   fqheader1 = "${sample}_${run_id}_${lane}_R1_BC.fq"
@@ -236,10 +242,11 @@ process prepare_files {
   File_ID_new=\$(echo "${sample}" | rev | cut -c 3- | rev)
   File_ID_number=\$(echo "${sample}" | rev | cut -c 1 | rev)
   Lane_ID_number=\$(echo "${lane}" | rev | cut -c 1 | rev)
-  convertHeaders.py -i $gzheader1 -o \${File_ID_new}_S1_L00\${Lane_ID_number}_R1_00\${File_ID_number}.fq.gz &
-  convertHeaders.py -i $gzheader2 -o \${File_ID_new}_S1_L00\${Lane_ID_number}_R2_00\${File_ID_number}.fq.gz
+  convertHeaders.py -i $gzheader1 -o \${File_ID_new}_S\${File_ID_number}_L00\${Lane_ID_number}_R1_001.fq.gz &
+  convertHeaders.py -i $gzheader2 -o \${File_ID_new}_S\${File_ID_number}_L00\${Lane_ID_number}_R2_001.fq.gz
   """
 }
+
 
 
 process cell_ranger {
@@ -249,24 +256,35 @@ process cell_ranger {
   publishDir "${cluster_path}/05_QC/${project}/cell_ranger/", mode: 'copy'
 
   input:
-  set val(sample), file(reads), file(transcriptome) from ch_cell_ranger
+  file('fastq/*') from ch_cell_ranger.collect().ifEmpty([])
+  file(genome) from ch_genome
 
   output:
   path("${sample}/")
 
   script:
   """
-  File_ID_new=\$(echo "${sample}" | rev | cut -c 3- | rev)
-  File_ID_number=\$(echo "${sample}" | rev | cut -c 1 | rev)
+  for f in \$(find fastq -name "*.fq.gz") \\
+  do \\
+  echo \$f >> filenames.tmp.txt \\
+  done
 
-  cellranger count --id=\${File_ID_new} \\
-  --fastqs=./ \\
-  --sample=\${File_ID_new} \\
-  --transcriptome="${transcriptome}" \\
+  sed 's/_S[0-9]*_L00[0-9]_R[1-2]_001.fq.gz//g' filenames.tmp.txt > filenames.tmp1.txt
+  sed 's/fastq\///g' filenames.tmp1.txt > names.txt
+
+  sort -u names.txt > sampleIDs.txt
+
+  while read f \\
+  do \\
+  cellranger count --id=\$f \\
+  --fastqs=fastq \\
+  --sample=\$f \\
+  --transcriptome="$genome" \\
   --chemistry=SC3Pv3 \\
   --expect-cells=8000 \\
   --localcores=$task.cpus \\
-  --localmem=78
+  --localmem=78 \\
+  done < sampleIDs.txt
   """
 
 }
