@@ -202,7 +202,7 @@ ${summary.collect { k,v -> "            <dt>$k</dt><dd><samp>${v ?: '<span style
  ch_samplesheet
  .splitCsv(header:true, sep:',')
  .map { validate_input(it) }
- .set { ch_prepare_file
+ .into { ch_prepare_file
          ch_fastq }
 
 
