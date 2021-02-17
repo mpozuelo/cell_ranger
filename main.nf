@@ -268,9 +268,9 @@ process cell_ranger {
 
   script:
   """
-  for f in \$(find fastq -name "*.fq.gz")
-  do
-  echo \$f >> filenames.tmp.txt
+  for f in \$(find fastq -name "*.fq.gz");
+  do;
+  echo \$f >> filenames.tmp.txt;
   done
 
   sed 's/_S[0-9]*_L00[0-9]_R[1-2]_001.fq.gz//g' filenames.tmp.txt > filenames.tmp1.txt
