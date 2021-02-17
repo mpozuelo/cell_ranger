@@ -249,7 +249,12 @@ process prepare_files {
 }
 
 process cell_ranger {
-  
+
+  script:
+
+  """
+  echo "hola"
+  """
 }
 /*
 process cell_ranger {
