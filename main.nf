@@ -274,7 +274,7 @@ process cell_ranger {
   done
 
   sed 's/_S\\[0-9\\]*_L00\\[0-9\\]_R\\[1-2\\]_001.fq.gz//g' filenames.tmp.txt > filenames.tmp1.txt
-  sed 's/fastq\///g' filenames.tmp1.txt > names.txt
+  sed 's/fastq\\///g' filenames.tmp1.txt > names.txt
 
   sort -u names.txt > sampleIDs.txt
 
