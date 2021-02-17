@@ -248,8 +248,25 @@ process prepare_files {
   """
 }
 
-
 process cell_ranger {
+  container 'mpozuelo/cellranger:cellranger'
+  tag "$params.genome"
+  label 'process_high'
+  publishDir "${cluster_path}/05_QC/${project}/cell_ranger/", mode: 'copy'
+
+  input:
+  file('fastq/*') from ch_cell_ranger.collect().ifEmpty([])
+  file(genome) from ch_genome
+
+  script:
+  """
+  echo "hola"
+  """
+
+}
+
+
+/*process cell_ranger {
   container 'mpozuelo/cellranger:cellranger'
   tag "$params.genome"
   label 'process_high'
