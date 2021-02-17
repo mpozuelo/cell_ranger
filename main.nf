@@ -215,7 +215,7 @@ ${summary.collect { k,v -> "            <dt>$k</dt><dd><samp>${v ?: '<span style
 
 process prepare_files {
   tag "$sample"
-  label 'process_low'
+  label 'process_medium'
   publishDir "${cluster_path}/04_pfastq/${platform}/${run_id}/${lane}/${user}/cell_ranger/", mode: 'copy',
   saveAs: { filename ->
     filename.endsWith(".fq.gz") ? "fastq/$filename" : filename
@@ -239,7 +239,7 @@ process prepare_files {
   """
   zcat ${reads[0]} | awk -v var="$index" '{if (NR%4 == 1){print \$1"_"var} else{print \$1}}' > $fqheader1 &
   zcat ${reads[1]} | awk -v var="$index" '{if (NR%4 == 1){print \$1"_"var} else{print \$1}}' > $fqheader2
-  pigz -p $task.cpus $fqheader1 &
+  pigz -p $task.cpus $fqheader1
   pigz -p $task.cpus $fqheader2
   File_ID_new=\$(echo "${sample}" | rev | cut -c 3- | rev)
   File_ID_number=\$(echo "${sample}" | rev | cut -c 1 | rev)
@@ -265,15 +265,17 @@ process cell_ranger {
   output:
   path("*")
 
-  script:
+  shell:
   """
   for f in \$(find fastq -name "*.fq.gz");
   do
   echo \$f >> filenames.tmp.txt;
   done
 
-  sed 's/_S\\[0-9\\]*_L00\\[0-9\\]_R\\[1-2\\]_001.fq.gz//g' filenames.tmp.txt > filenames.tmp1.txt
-  sed 's/fastq\\///g' filenames.tmp1.txt > names.txt
+  $/
+  sed 's/_S[0-9]*_L00[0-9]_R[1-2]_001.fq.gz//g' filenames.tmp.txt > filenames.tmp1.txt
+  sed 's/fastq\///g' filenames.tmp1.txt > names.txt
+  /$
 
   sort -u names.txt > sampleIDs.txt
 
