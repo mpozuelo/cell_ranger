@@ -269,9 +269,26 @@ process cell_ranger {
   script:
   """
   for f in \$(find fastq -name "*.fq.gz");
-  do;
+  do
   echo \$f >> filenames.tmp.txt;
   done
+
+  sed 's\/_S[0-9]*_L00[0-9]_R[1-2]_001.fq.gz\/\/g' filenames.tmp.txt > filenames.tmp1.txt
+  sed 's\/fastq\\\/\/\/g' filenames.tmp1.txt > names.txt
+
+  sort -u names.txt > sampleIDs.txt
+
+  while read f;
+  do
+  cellranger count --id=\$f \\
+  --fastqs=fastq \\
+  --sample=\$f \\
+  --transcriptome=$genome \\
+  --chemistry=SC3Pv3 \\
+  --expect-cells=8000 \\
+  --localcores=$task.cpus \\
+  --localmem=78
+  done < sampleIDs.txt
 
   """
 
@@ -279,21 +296,8 @@ process cell_ranger {
 
 /*
 
-  sed 's/_S[0-9]*_L00[0-9]_R[1-2]_001.fq.gz//g' filenames.tmp.txt > filenames.tmp1.txt
-  sed 's/fastq\///g' filenames.tmp1.txt > names.txt
 
-  sort -u names.txt > sampleIDs.txt
-while read f
-do
-cellranger count --id=\$f \\
---fastqs=fastq \\
---sample=\$f \\
---transcriptome=$genome \\
---chemistry=SC3Pv3 \\
---expect-cells=8000 \\
---localcores=$task.cpus \\
---localmem=78
-done < sampleIDs.txt
+
 /*process cell_ranger {
   container 'mpozuelo/cellranger:cellranger'
   tag "$params.genome"
