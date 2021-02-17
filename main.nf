@@ -254,7 +254,11 @@ process cell_ranger {
   tag "$params.genome"
   label 'process_high'
   publishDir "${cluster_path}/05_QC/${project}/cell_ranger/", mode: 'copy'
-  
+
+  input:
+  file('fastq/*') from ch_cell_ranger.collect().ifEmpty([])
+  file(genome) from ch_genome
+
   script:
 
   """
