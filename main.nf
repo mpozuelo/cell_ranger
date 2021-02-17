@@ -203,6 +203,7 @@ ${summary.collect { k,v -> "            <dt>$k</dt><dd><samp>${v ?: '<span style
  .splitCsv(header:true, sep:',')
  .map { validate_input(it) }
  .into { ch_prepare_file
+           ch_samplesheet_cell_ranger
          ch_fastq }
 
 
@@ -224,7 +225,7 @@ process prepare_files {
   set val(sample), file(reads), val(index), val(run_id), val(lane), val(platform), val(user) from ch_prepare_file
 
   output:
-  file("*_S1_L00*.fq.gz") into ch_cell_ranger
+  file("fastq_mod/*/*.fq.gz") into cr_fastqs_copyfs_ch
 
   script:
   fqheader1 = "${sample}_${run_id}_${lane}_R1_BC.fq"
@@ -243,10 +244,14 @@ process prepare_files {
   File_ID_new=\$(echo "${sample}" | rev | cut -c 3- | rev)
   File_ID_number=\$(echo "${sample}" | rev | cut -c 1 | rev)
   Lane_ID_number=\$(echo "${lane}" | rev | cut -c 1 | rev)
-  convertHeaders.py -i $gzheader1 -o \${File_ID_new}_S\${File_ID_number}_L00\${Lane_ID_number}_R1_001.fq.gz &
-  convertHeaders.py -i $gzheader2 -o \${File_ID_new}_S\${File_ID_number}_L00\${Lane_ID_number}_R2_001.fq.gz
+  mkdir -p fastq_mod/$user
+  convertHeaders.py -i $gzheader1 -o fastq_mod/$project/\${File_ID_new}_S\${File_ID_number}_L00\${Lane_ID_number}_R1_001.fq.gz &
+  convertHeaders.py -i $gzheader2 -o fastq_mod/$project/\${File_ID_new}_S\${File_ID_number}_L00\${Lane_ID_number}_R2_001.fq.gz
   """
 }
+
+
+
 
 process cell_ranger {
   container 'mpozuelo/cellranger:cellranger'
@@ -273,22 +278,21 @@ process cell_ranger {
 
   sort -u names.txt > sampleIDs.txt
 
-  while read f
-  do
-  cellranger count --id=\$f \\
-  --fastqs=fastq \\
-  --sample=\$f \\
-  --transcriptome=$genome \\
-  --chemistry=SC3Pv3 \\
-  --expect-cells=8000 \\
-  --localcores=$task.cpus \\
-  --localmem=78 
-  done < sampleIDs.txt
   """
 
 }
 
-
+/*while read f
+do
+cellranger count --id=\$f \\
+--fastqs=fastq \\
+--sample=\$f \\
+--transcriptome=$genome \\
+--chemistry=SC3Pv3 \\
+--expect-cells=8000 \\
+--localcores=$task.cpus \\
+--localmem=78
+done < sampleIDs.txt
 /*process cell_ranger {
   container 'mpozuelo/cellranger:cellranger'
   tag "$params.genome"
