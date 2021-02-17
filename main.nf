@@ -250,6 +250,11 @@ process prepare_files {
 
 process cell_ranger {
 
+  container 'mpozuelo/cellranger:cellranger'
+  tag "$params.genome"
+  label 'process_high'
+  publishDir "${cluster_path}/05_QC/${project}/cell_ranger/", mode: 'copy'
+  
   script:
 
   """
