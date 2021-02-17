@@ -250,7 +250,7 @@ process prepare_files {
 
 
 
-process cell_ranger {
+process cellranger {
   container 'mpozuelo/cellranger:cellranger'
   tag "$params.genome"
   label 'process_high'
@@ -266,9 +266,9 @@ process cell_ranger {
   script:
 
   """
-  for f in \$(find fastq -name "*.fq.gz") \\
-  do \\
-  echo \$f >> filenames.tmp.txt \\
+  for f in \$(find fastq -name "*.fq.gz")
+  do
+  echo \$f >> filenames.tmp.txt
   done
 
   sed 's/_S[0-9]*_L00[0-9]_R[1-2]_001.fq.gz//g' filenames.tmp.txt > filenames.tmp1.txt
@@ -276,12 +276,12 @@ process cell_ranger {
 
   sort -u names.txt > sampleIDs.txt
 
-  while read f \\
-  do \\
+  while read f
+  do
   cellranger count --id=\$f \\
   --fastqs=fastq \\
   --sample=\$f \\
-  --transcriptome="$genome" \\
+  --transcriptome=$genome \\
   --chemistry=SC3Pv3 \\
   --expect-cells=8000 \\
   --localcores=$task.cpus \\
