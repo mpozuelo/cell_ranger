@@ -297,7 +297,19 @@ process cell_ranger {
 
 sed 's\/fastq\\\/\/\/g' filenames.tmp1.txt > names.txt
 
+sort -u names.txt > sampleIDs.txt
 
+while read f;
+do
+cellranger count --id=\$f \\
+--fastqs=fastq \\
+--sample=\$f \\
+--transcriptome=$genome \\
+--chemistry=SC3Pv3 \\
+--expect-cells=8000 \\
+--localcores=$task.cpus \\
+--localmem=78
+done < sampleIDs.txt
 
 
 
