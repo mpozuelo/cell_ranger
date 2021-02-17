@@ -225,7 +225,7 @@ process prepare_files {
   set val(sample), file(reads), val(index), val(run_id), val(lane), val(platform), val(user) from ch_prepare_file
 
   output:
-  file("fastq_mod/*/*.fq.gz") into cr_fastqs_copyfs_ch
+  file("fastq_mod/*/*.fq.gz") into ch_cell_ranger
 
   script:
   fqheader1 = "${sample}_${run_id}_${lane}_R1_BC.fq"
