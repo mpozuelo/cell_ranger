@@ -257,6 +257,9 @@ process cell_ranger {
   input:
   file('fastq/*') from ch_cell_ranger.collect().ifEmpty([])
   file(genome) from ch_genome
+  
+  output:
+  path("*")
 
   script:
   """
