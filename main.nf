@@ -248,6 +248,7 @@ process prepare_files {
   """
 }
 
+/*
 process cell_ranger {
   container 'mpozuelo/cellranger:cellranger'
   tag "$params.genome"
@@ -286,7 +287,7 @@ process cell_ranger {
   --localmem=78 \\
   done < sampleIDs.txt
   """
-*/
+
 }
 
 /*
