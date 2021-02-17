@@ -248,9 +248,7 @@ process prepare_files {
   """
 }
 
-
-
-process cellranger {
+process cell_ranger {
   container 'mpozuelo/cellranger:cellranger'
   tag "$params.genome"
   label 'process_high'
